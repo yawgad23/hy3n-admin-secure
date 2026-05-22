@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { calcDynamicFare } from "../pages/Pricing";
 import { base44 } from "@/api/base44Client";
 import { X } from "lucide-react";
 
@@ -32,8 +33,7 @@ export default function RideForm({ ride, onClose, onSaved }) {
   const calcEstimatedFare = (vehicleType, distanceKm) => {
     const cfg = fareConfigs[vehicleType];
     if (!cfg || !distanceKm) return "";
-    const fare = (cfg.base_fare + cfg.per_km_rate * Number(distanceKm)) * (cfg.surge_multiplier ?? 1);
-    return Math.max(fare, cfg.minimum_fare ?? 0).toFixed(2);
+    return calcDynamicFare(cfg, distanceKm) || "";
   };
 
   const handleSubmit = async (e) => {
