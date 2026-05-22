@@ -7,11 +7,13 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 // Add page imports here
 import AdminLayout from './components/AdminLayout';
+import AdminGuard from './components/AdminGuard';
 import Dashboard from './pages/Dashboard';
 import Rides from './pages/Rides';
 import Drivers from './pages/Drivers';
 import Riders from './pages/Riders';
 import Settings from './pages/Settings';
+import Login from './pages/Login';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -39,12 +41,15 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route element={<AdminLayout />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/rides" element={<Rides />} />
-        <Route path="/drivers" element={<Drivers />} />
-        <Route path="/riders" element={<Riders />} />
-        <Route path="/settings" element={<Settings />} />
+      <Route path="/login" element={<Login />} />
+      <Route element={<AdminGuard />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/rides" element={<Rides />} />
+          <Route path="/drivers" element={<Drivers />} />
+          <Route path="/riders" element={<Riders />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
