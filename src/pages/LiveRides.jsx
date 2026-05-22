@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { MapPin, Navigation, Clock, RefreshCw, Circle, AlertTriangle } from "lucide-react";
+import LiveMap from "../components/LiveMap";
 
 const tripStatusConfig = {
   "Requested":   { label: "Waiting for Driver", color: "text-blue-400 bg-blue-400/10", dot: "bg-blue-400", pulse: false },
@@ -77,6 +78,17 @@ export default function LiveRides() {
             <p className="text-xs text-muted-foreground">Trip Started</p>
           </div>
           <p className="text-3xl font-bold text-hy3n-green">{tripStarted.length}</p>
+        </div>
+      </div>
+
+      {/* Map */}
+      <div className="bg-hy3n-surface border border-hy3n-border rounded-2xl overflow-hidden" style={{ height: 420 }}>
+        <div className="px-5 py-3 border-b border-hy3n-border flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-white">Live Map</h2>
+          <span className="text-xs text-muted-foreground">{active.length} active rides shown</span>
+        </div>
+        <div style={{ height: 374 }}>
+          <LiveMap rides={active} />
         </div>
       </div>
 
