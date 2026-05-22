@@ -13,6 +13,7 @@ import Rides from './pages/Rides';
 import Drivers from './pages/Drivers';
 import Riders from './pages/Riders';
 import Settings from './pages/Settings';
+import Commissions from './pages/Commissions';
 import Login from './pages/Login';
 
 const AuthenticatedApp = () => {
@@ -49,6 +50,7 @@ const AuthenticatedApp = () => {
           <Route path="/drivers" element={<Drivers />} />
           <Route path="/riders" element={<Riders />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/commissions" element={<Commissions />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
