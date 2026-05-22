@@ -66,6 +66,18 @@
     "is_online": {
       "type": "boolean",
       "title": "Currently Online"
+    },
+    "current_latitude": {
+      "type": "number",
+      "title": "Current Latitude"
+    },
+    "current_longitude": {
+      "type": "number",
+      "title": "Current Longitude"
+    },
+    "last_location_update": {
+      "type": "string",
+      "title": "Last Location Update"
     }
   },
   "required": [

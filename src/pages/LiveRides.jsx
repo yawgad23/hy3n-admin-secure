@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { MapPin, Navigation, Clock, RefreshCw, Circle, AlertTriangle } from "lucide-react";
+import DispatchEngine from "../components/DispatchEngine";
 import LiveMap from "../components/LiveMap";
 
 const tripStatusConfig = {
@@ -15,6 +16,7 @@ export default function LiveRides() {
   const [rides, setRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState(new Date());
+  const [dispatchRide, setDispatchRide] = useState(null);
 
   const fetchRides = () => {
     setLoading(true);
@@ -156,10 +158,10 @@ export default function LiveRides() {
 
                   {/* Admin actions */}
                   <div className="flex gap-2 flex-wrap">
-                    {ride.status === "Accepted" && (
-                      <button onClick={() => updateRideStatus(ride, "In Progress")}
-                        className="text-xs text-hy3n-green border border-hy3n-green/30 hover:bg-hy3n-green/10 px-2 py-1 rounded-lg transition-colors">
-                        Mark Started
+                    {ride.status === "Requested" && (
+                      <button onClick={() => setDispatchRide(ride)}
+                        className="text-xs text-hy3n-gold border border-hy3n-gold/30 hover:bg-hy3n-gold/10 px-2 py-1 rounded-lg transition-colors flex items-center gap-1">
+                        ⚡ Dispatch
                       </button>
                     )}
                     {ride.status !== "Completed" && (
@@ -216,6 +218,14 @@ export default function LiveRides() {
           </div>
         </div>
       </div>
+
+      {dispatchRide && (
+        <DispatchEngine
+          ride={dispatchRide}
+          onClose={() => setDispatchRide(null)}
+          onDispatched={fetchRides}
+        />
+      )}
     </div>
   );
 }
