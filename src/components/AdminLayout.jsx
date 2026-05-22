@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   LayoutDashboard, Car, Users, UserCircle, Settings,
   Menu, X, LogOut, Bell, ChevronRight, Wallet,
-  MessageSquare, Radio, BarChart2
+  MessageSquare, Radio, BarChart2, ClipboardList
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
@@ -15,6 +15,7 @@ const navItems = [
   { path: "/live", label: "Live Rides", icon: Radio },
   { path: "/commissions", label: "Commissions", icon: Wallet },
   { path: "/support", label: "Support", icon: MessageSquare },
+  { path: "/applications", label: "Applications", icon: ClipboardList },
   { path: "/analytics", label: "Analytics", icon: BarChart2 },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
