@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { X } from "lucide-react";
 
@@ -19,6 +19,22 @@ export default function RideForm({ ride, onClose, onSaved }) {
     rating: ride?.rating || "",
   });
   const [saving, setSaving] = useState(false);
+  const [fareConfigs, setFareConfigs] = useState({});
+
+  useEffect(() => {
+    base44.entities.FareConfig.list().then(data => {
+      const map = {};
+      data.forEach(c => { map[c.vehicle_type] = c; });
+      setFareConfigs(map);
+    });
+  }, []);
+
+  const calcEstimatedFare = (vehicleType, distanceKm) => {
+    const cfg = fareConfigs[vehicleType];
+    if (!cfg || !distanceKm) return "";
+    const fare = (cfg.base_fare + cfg.per_km_rate * Number(distanceKm)) * (cfg.surge_multiplier ?? 1);
+    return Math.max(fare, cfg.minimum_fare ?? 0).toFixed(2);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,14 +53,15 @@ export default function RideForm({ ride, onClose, onSaved }) {
     { key: "rider_name", label: "Rider Name", required: true },
     { key: "rider_phone", label: "Rider Phone" },
     { key: "driver_name", label: "Driver Name" },
-    { key: "pickup_location", label: "Pickup Location" },
-    { key: "dropoff_location", label: "Dropoff Location" },
+    { key: "pickup_location", label: "Pickup Location", wide: true },
+    { key: "dropoff_location", label: "Dropoff Location", wide: true },
     { key: "city", label: "City" },
-    { key: "fare", label: "Fare (GHS)", number: true },
     { key: "distance_km", label: "Distance (km)", number: true },
     { key: "duration_min", label: "Duration (min)", number: true },
     { key: "rating", label: "Rating (1-5)", number: true },
   ];
+
+  const est = calcEstimatedFare(form.vehicle_type, form.distance_km);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
@@ -56,24 +73,72 @@ export default function RideForm({ ride, onClose, onSaved }) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             {textFields.map(f => (
-              <div key={f.key} className={f.key === "pickup_location" || f.key === "dropoff_location" ? "col-span-2" : ""}>
+              <div key={f.key} className={f.wide ? "col-span-2" : ""}>
                 <label className="text-xs text-muted-foreground font-medium mb-1 block">{f.label}</label>
                 <input
                   type={f.number ? "number" : "text"}
                   value={form[f.key]}
-                  onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setForm(p => {
+                      const next = { ...p, [f.key]: val };
+                      // Auto-fill fare when distance changes
+                      if (f.key === "distance_km") {
+                        const newEst = calcEstimatedFare(p.vehicle_type, val);
+                        if (newEst) next.fare = newEst;
+                      }
+                      return next;
+                    });
+                  }}
                   required={f.required}
                   className="w-full bg-hy3n-bg border border-hy3n-border text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-hy3n-gold/60"
                 />
               </div>
             ))}
+
+            {/* Vehicle Type */}
             <div>
+              <label className="text-xs text-muted-foreground font-medium mb-1 block">Vehicle Type</label>
+              <select value={form.vehicle_type} onChange={e => {
+                const vt = e.target.value;
+                const newEst = calcEstimatedFare(vt, form.distance_km);
+                setForm(p => ({ ...p, vehicle_type: vt, fare: newEst || p.fare }));
+              }}
+                className="w-full bg-hy3n-bg border border-hy3n-border text-white rounded-xl px-3 py-2 text-sm focus:outline-none">
+                {["Sedan","SUV","Tricycle","Motorcycle","Minivan"].map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+
+            {/* Fare with auto-calc */}
+            <div>
+              <label className="text-xs text-muted-foreground font-medium mb-1 block">Fare (GHS)</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={form.fare}
+                  onChange={e => setForm(p => ({ ...p, fare: e.target.value }))}
+                  placeholder={est || "Enter fare"}
+                  className="w-full bg-hy3n-bg border border-hy3n-gold/40 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-hy3n-gold/60"
+                />
+                {est && (
+                  <button type="button"
+                    onClick={() => setForm(p => ({ ...p, fare: est }))}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-hy3n-gold hover:underline">Auto</button>
+                )}
+              </div>
+              {est && <p className="text-xs text-muted-foreground mt-1">Est: GHS {est}</p>}
+            </div>
+
+            {/* Status */}
+            <div className="col-span-2">
               <label className="text-xs text-muted-foreground font-medium mb-1 block">Status</label>
               <select value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))}
                 className="w-full bg-hy3n-bg border border-hy3n-border text-white rounded-xl px-3 py-2 text-sm focus:outline-none">
                 {["Requested","Accepted","In Progress","Completed","Cancelled"].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
+
+            {/* Payment */}
             <div>
               <label className="text-xs text-muted-foreground font-medium mb-1 block">Payment</label>
               <select value={form.payment_method} onChange={e => setForm(p => ({ ...p, payment_method: e.target.value }))}
@@ -82,6 +147,7 @@ export default function RideForm({ ride, onClose, onSaved }) {
               </select>
             </div>
           </div>
+
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 border border-hy3n-border text-muted-foreground hover:text-white py-2.5 rounded-xl text-sm transition-colors">Cancel</button>
             <button type="submit" disabled={saving} className="flex-1 bg-hy3n-gold hover:bg-hy3n-gold/90 text-black font-semibold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-60">

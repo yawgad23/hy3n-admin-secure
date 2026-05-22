@@ -18,6 +18,7 @@ import Support from './pages/Support';
 import LiveRides from './pages/LiveRides';
 import Analytics from './pages/Analytics';
 import DriverApplications from './pages/DriverApplications';
+import Pricing from './pages/Pricing';
 import Login from './pages/Login';
 
 const AuthenticatedApp = () => {
@@ -59,6 +60,7 @@ const AuthenticatedApp = () => {
           <Route path="/live" element={<LiveRides />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/applications" element={<DriverApplications />} />
+          <Route path="/pricing" element={<Pricing />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
