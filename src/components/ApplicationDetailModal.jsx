@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { X, User, Car, FileText, CheckCircle, XCircle, Clock, Eye } from "lucide-react";
+import { X, User, Car, FileText, CheckCircle, XCircle, Clock, Eye, CreditCard } from "lucide-react";
 
 const statusColors = {
   "Pending": "text-hy3n-gold bg-hy3n-gold/10",
@@ -117,7 +117,7 @@ export default function ApplicationDetailModal({ application, onClose, onUpdated
           </section>
 
           {/* Documents */}
-          {(a.license_photo_url || a.vehicle_photo_url || a.profile_photo_url || a.id_card_url) && (
+          {(a.license_photo_url || a.vehicle_photo_url || a.profile_photo_url || a.id_card_url || a.vehicle_reg_url) && (
             <section>
               <div className="flex items-center gap-2 mb-3">
                 <FileText size={15} className="text-hy3n-gold" />
@@ -128,6 +128,24 @@ export default function ApplicationDetailModal({ application, onClose, onUpdated
                 <PhotoCard label="Driver's License" url={a.license_photo_url} />
                 <PhotoCard label="Ghana Card / ID" url={a.id_card_url} />
                 <PhotoCard label="Vehicle Photo" url={a.vehicle_photo_url} />
+                <PhotoCard label="Vehicle Registration" url={a.vehicle_reg_url} />
+              </div>
+            </section>
+          )}
+
+          {/* Bank / Payment Details */}
+          {(a.bank_name || a.mobile_money_number) && (
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <CreditCard size={15} className="text-hy3n-gold" />
+                <h3 className="text-sm font-semibold text-white">Payment Details</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4 bg-white/3 rounded-xl p-4">
+                <InfoRow label="Mobile Money Provider" value={a.mobile_money_provider} />
+                <InfoRow label="Mobile Money Number" value={a.mobile_money_number} />
+                <InfoRow label="Bank Name" value={a.bank_name} />
+                <InfoRow label="Account Number" value={a.bank_account_number} />
+                <InfoRow label="Account Holder" value={a.bank_account_name} />
               </div>
             </section>
           )}

@@ -53,6 +53,10 @@
       "type": "string",
       "title": "Vehicle Photo URL"
     },
+    "vehicle_reg_url": {
+      "type": "string",
+      "title": "Vehicle Registration URL"
+    },
     "profile_photo_url": {
       "type": "string",
       "title": "Profile Photo URL"
@@ -60,6 +64,31 @@
     "id_card_url": {
       "type": "string",
       "title": "ID Card / Ghana Card URL"
+    },
+    "bank_name": {
+      "type": "string",
+      "title": "Bank Name"
+    },
+    "bank_account_number": {
+      "type": "string",
+      "title": "Bank Account Number"
+    },
+    "bank_account_name": {
+      "type": "string",
+      "title": "Account Holder Name"
+    },
+    "mobile_money_number": {
+      "type": "string",
+      "title": "Mobile Money Number"
+    },
+    "mobile_money_provider": {
+      "type": "string",
+      "title": "Mobile Money Provider",
+      "enum": [
+        "MTN",
+        "Telecel",
+        "AirtelTigo"
+      ]
     },
     "status": {
       "type": "string",
