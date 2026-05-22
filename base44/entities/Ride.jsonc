@@ -1,0 +1,78 @@
+{
+  "name": "Ride",
+  "type": "object",
+  "properties": {
+    "rider_name": {
+      "type": "string",
+      "title": "Rider Name"
+    },
+    "rider_phone": {
+      "type": "string",
+      "title": "Rider Phone"
+    },
+    "driver_name": {
+      "type": "string",
+      "title": "Driver Name"
+    },
+    "driver_id": {
+      "type": "string",
+      "title": "Driver ID"
+    },
+    "pickup_location": {
+      "type": "string",
+      "title": "Pickup Location"
+    },
+    "dropoff_location": {
+      "type": "string",
+      "title": "Dropoff Location"
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "enum": [
+        "Requested",
+        "Accepted",
+        "In Progress",
+        "Completed",
+        "Cancelled"
+      ]
+    },
+    "fare": {
+      "type": "number",
+      "title": "Fare (GHS)"
+    },
+    "distance_km": {
+      "type": "number",
+      "title": "Distance (km)"
+    },
+    "duration_min": {
+      "type": "number",
+      "title": "Duration (min)"
+    },
+    "vehicle_type": {
+      "type": "string",
+      "title": "Vehicle Type"
+    },
+    "payment_method": {
+      "type": "string",
+      "title": "Payment Method",
+      "enum": [
+        "Cash",
+        "Mobile Money",
+        "Card"
+      ]
+    },
+    "city": {
+      "type": "string",
+      "title": "City"
+    },
+    "rating": {
+      "type": "number",
+      "title": "Rating"
+    }
+  },
+  "required": [
+    "rider_name",
+    "status"
+  ]
+}

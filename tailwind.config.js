@@ -4,10 +4,8 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  		fontFamily: {
+  			inter: ['Inter', 'sans-serif'],
   		},
   		colors: {
   			background: 'hsl(var(--background))',
@@ -58,8 +56,14 @@ module.exports = {
   				accent: 'hsl(var(--sidebar-accent))',
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
-  				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  				ring: 'hsl(var(--sidebar-ring))',
+  			},
+  			'hy3n-bg': 'hsl(var(--hy3n-bg))',
+  			'hy3n-surface': 'hsl(var(--hy3n-surface))',
+  			'hy3n-border': 'hsl(var(--hy3n-border))',
+  			'hy3n-gold': 'hsl(var(--hy3n-gold))',
+  			'hy3n-red': 'hsl(var(--hy3n-red))',
+  			'hy3n-green': 'hsl(var(--hy3n-green))',
   		},
   		keyframes: {
   			'accordion-down': {
