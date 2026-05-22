@@ -14,6 +14,9 @@ import Drivers from './pages/Drivers';
 import Riders from './pages/Riders';
 import Settings from './pages/Settings';
 import Commissions from './pages/Commissions';
+import Support from './pages/Support';
+import LiveRides from './pages/LiveRides';
+import Analytics from './pages/Analytics';
 import Login from './pages/Login';
 
 const AuthenticatedApp = () => {
@@ -51,6 +54,9 @@ const AuthenticatedApp = () => {
           <Route path="/riders" element={<Riders />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/commissions" element={<Commissions />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/live" element={<LiveRides />} />
+          <Route path="/analytics" element={<Analytics />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

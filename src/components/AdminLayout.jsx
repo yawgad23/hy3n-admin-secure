@@ -2,7 +2,8 @@ import { Link, useLocation, Outlet } from "react-router-dom";
 import { useState } from "react";
 import {
   LayoutDashboard, Car, Users, UserCircle, Settings,
-  Menu, X, LogOut, Bell, ChevronRight, Wallet
+  Menu, X, LogOut, Bell, ChevronRight, Wallet,
+  MessageSquare, Radio, BarChart2
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
@@ -11,7 +12,10 @@ const navItems = [
   { path: "/rides", label: "Rides", icon: Car },
   { path: "/drivers", label: "Drivers", icon: UserCircle },
   { path: "/riders", label: "Riders", icon: Users },
+  { path: "/live", label: "Live Rides", icon: Radio },
   { path: "/commissions", label: "Commissions", icon: Wallet },
+  { path: "/support", label: "Support", icon: MessageSquare },
+  { path: "/analytics", label: "Analytics", icon: BarChart2 },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
 

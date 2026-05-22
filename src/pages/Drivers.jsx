@@ -37,6 +37,12 @@ export default function Drivers() {
     return matchSearch && matchStatus;
   });
 
+  const handleSuspend = async (driver) => {
+    const newStatus = driver.status === "Suspended" ? "Active" : "Suspended";
+    await base44.entities.Driver.update(driver.id, { status: newStatus });
+    fetchDrivers();
+  };
+
   const handleDelete = async (id) => {
     if (!confirm("Delete this driver?")) return;
     await base44.entities.Driver.delete(id);
@@ -137,9 +143,14 @@ export default function Drivers() {
                   <span className="text-xs text-muted-foreground ml-1">{driver.rating?.toFixed(1)}</span>
                 </div>
               )}
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button onClick={() => { setEditDriver(driver); setShowForm(true); }} className="flex-1 text-xs text-hy3n-gold border border-hy3n-gold/30 hover:bg-hy3n-gold/10 py-1.5 rounded-lg transition-colors">Edit</button>
-                <button onClick={() => handleDelete(driver.id)} className="flex-1 text-xs text-hy3n-red border border-hy3n-red/30 hover:bg-hy3n-red/10 py-1.5 rounded-lg transition-colors">Delete</button>
+                <button onClick={() => handleSuspend(driver)} className={`flex-1 text-xs py-1.5 rounded-lg transition-colors border ${
+                  driver.status === "Suspended"
+                    ? "text-hy3n-green border-hy3n-green/30 hover:bg-hy3n-green/10"
+                    : "text-hy3n-red border-hy3n-red/30 hover:bg-hy3n-red/10"
+                }`}>{driver.status === "Suspended" ? "Unsuspend" : "Suspend"}</button>
+                <button onClick={() => handleDelete(driver.id)} className="text-xs text-muted-foreground border border-hy3n-border hover:text-hy3n-red py-1.5 px-2 rounded-lg transition-colors">✕</button>
               </div>
             </div>
           ))}
