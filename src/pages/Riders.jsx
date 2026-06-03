@@ -19,7 +19,7 @@ export default function Riders() {
 
   const fetchRiders = () => {
     setLoading(true);
-    base44.entities.Rider.list("-created_date", 200).then(data => {
+    base44.entities.RiderProfile.list("-created_date", 200).then(data => {
       setRiders(data);
       setLoading(false);
     });
@@ -38,7 +38,7 @@ export default function Riders() {
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this rider?")) return;
-    await base44.entities.Rider.delete(id);
+    await base44.entities.RiderProfile.delete(id);
     fetchRiders();
   };
 

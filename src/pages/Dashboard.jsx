@@ -32,8 +32,8 @@ export default function Dashboard() {
   useEffect(() => {
     Promise.all([
       base44.entities.Ride.list("-created_date", 50),
-      base44.entities.Driver.list("-created_date", 200),
-      base44.entities.Rider.list("-created_date", 200),
+      base44.entities.DriverProfile.list("-created_date", 200),
+      base44.entities.RiderProfile.list("-created_date", 200),
     ]).then(([r, d, ri]) => {
       setRides(r);
       setDrivers(d);

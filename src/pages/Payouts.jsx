@@ -17,7 +17,7 @@ export default function Payouts() {
   const fetchAll = () => {
     setLoading(true);
     Promise.all([
-      base44.entities.Driver.list("-created_date", 200),
+      base44.entities.DriverProfile.list("-created_date", 200),
       base44.entities.Ride.filter({ status: "Completed" }, "-created_date", 1000),
       base44.entities.Payout.list("-created_date", 1000),
       base44.entities.Commission.list("-created_date", 500),

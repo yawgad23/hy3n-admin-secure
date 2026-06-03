@@ -41,9 +41,9 @@ export default function DriverForm({ driver, onClose, onSaved }) {
     if (data.total_earnings) data.total_earnings = Number(data.total_earnings);
     if (data.rating) data.rating = Number(data.rating);
     if (driver?.id) {
-      await base44.entities.Driver.update(driver.id, data);
+      await base44.entities.DriverProfile.update(driver.id, data);
     } else {
-      await base44.entities.Driver.create(data);
+      await base44.entities.DriverProfile.create(data);
     }
     onSaved();
   };

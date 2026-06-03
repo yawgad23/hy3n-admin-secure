@@ -48,7 +48,7 @@ export default function ApplicationDetailModal({ application, onClose, onUpdated
     await base44.entities.DriverApplication.update(application.id, updates);
 
     if (status === "Approved") {
-      await base44.entities.Driver.create({
+      await base44.entities.DriverProfile.create({
         full_name: application.full_name,
         phone: application.phone,
         email: application.email,

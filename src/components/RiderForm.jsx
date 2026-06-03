@@ -22,9 +22,9 @@ export default function RiderForm({ rider, onClose, onSaved }) {
     const data = { ...form };
     ["total_rides","total_spent","rating"].forEach(k => { if (data[k]) data[k] = Number(data[k]); });
     if (rider?.id) {
-      await base44.entities.Rider.update(rider.id, data);
+      await base44.entities.RiderProfile.update(rider.id, data);
     } else {
-      await base44.entities.Rider.create(data);
+      await base44.entities.RiderProfile.create(data);
     }
     onSaved();
   };

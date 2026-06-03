@@ -20,7 +20,7 @@ export default function Drivers() {
 
   const fetchDrivers = () => {
     setLoading(true);
-    base44.entities.Driver.list("-created_date", 200).then(data => {
+    base44.entities.DriverProfile.list("-created_date", 200).then(data => {
       setDrivers(data);
       setLoading(false);
     });
@@ -39,13 +39,13 @@ export default function Drivers() {
 
   const handleSuspend = async (driver) => {
     const newStatus = driver.status === "Suspended" ? "Active" : "Suspended";
-    await base44.entities.Driver.update(driver.id, { status: newStatus });
+    await base44.entities.DriverProfile.update(driver.id, { status: newStatus });
     fetchDrivers();
   };
 
   const handleDelete = async (id) => {
     if (!confirm("Delete this driver?")) return;
-    await base44.entities.Driver.delete(id);
+    await base44.entities.DriverProfile.delete(id);
     fetchDrivers();
   };
 

@@ -13,7 +13,7 @@ export default function Analytics() {
   useEffect(() => {
     Promise.all([
       base44.entities.Ride.list("-created_date", 500),
-      base44.entities.Driver.list("-created_date", 200),
+      base44.entities.DriverProfile.list("-created_date", 200),
     ]).then(([r, d]) => { setRides(r); setDrivers(d); setLoading(false); });
   }, []);
 
