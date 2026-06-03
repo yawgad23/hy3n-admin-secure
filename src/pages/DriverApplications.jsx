@@ -1,45 +1,42 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Search, ClipboardList, Clock, CheckCircle, XCircle, Eye, RefreshCw } from "lucide-react";
-import ApplicationDetailModal from "../components/ApplicationDetailModal";
 
 const statusColors = {
-  "Pending": "text-hy3n-gold bg-hy3n-gold/10",
-  "Under Review": "text-blue-400 bg-blue-400/10",
-  "Approved": "text-hy3n-green bg-hy3n-green/10",
-  "Rejected": "text-hy3n-red bg-hy3n-red/10",
+  "pending":  "text-hy3n-gold bg-hy3n-gold/10",
+  "approved": "text-hy3n-green bg-hy3n-green/10",
+  "rejected": "text-hy3n-red bg-hy3n-red/10",
 };
 
 const statusIcons = {
-  "Pending": Clock,
-  "Under Review": RefreshCw,
-  "Approved": CheckCircle,
-  "Rejected": XCircle,
+  "pending":  Clock,
+  "approved": CheckCircle,
+  "rejected": XCircle,
 };
 
 export default function DriverApplications() {
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [loading, setLoading]           = useState(true);
+  const [search, setSearch]             = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected]         = useState(null);
+  const [saving, setSaving]             = useState(null);
 
   const fetchApplications = () => {
     setLoading(true);
-    base44.entities.DriverApplication.list("-created_date", 200).then(data => {
+    base44.entities.DriverProfile.list("-created_date", 200).then(data => {
       setApplications(data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
   useEffect(() => { fetchApplications(); }, []);
 
   const counts = {
-    All: applications.length,
-    Pending: applications.filter(a => a.status === "Pending").length,
-    "Under Review": applications.filter(a => a.status === "Under Review").length,
-    Approved: applications.filter(a => a.status === "Approved").length,
-    Rejected: applications.filter(a => a.status === "Rejected").length,
+    All:      applications.length,
+    pending:  applications.filter(a => a.approval_status === "pending").length,
+    approved: applications.filter(a => a.approval_status === "approved").length,
+    rejected: applications.filter(a => a.approval_status === "rejected").length,
   };
 
   const filtered = applications.filter(a => {
@@ -47,10 +44,18 @@ export default function DriverApplications() {
       a.full_name?.toLowerCase().includes(search.toLowerCase()) ||
       a.phone?.toLowerCase().includes(search.toLowerCase()) ||
       a.email?.toLowerCase().includes(search.toLowerCase()) ||
-      a.vehicle_plate?.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = filterStatus === "All" || a.status === filterStatus;
+      a.license_plate?.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = filterStatus === "All" || a.approval_status === filterStatus;
     return matchSearch && matchStatus;
   });
+
+  const updateStatus = async (driver, newStatus) => {
+    setSaving(driver.id + newStatus);
+    await base44.entities.DriverProfile.update(driver.id, { approval_status: newStatus });
+    setSaving(null);
+    setSelected(null);
+    fetchApplications();
+  };
 
   return (
     <div className="space-y-5">
@@ -69,24 +74,21 @@ export default function DriverApplications() {
       </div>
 
       {/* Status summary cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {[
-          { status: "Pending", label: "Awaiting Review", color: "bg-hy3n-gold", icon: Clock },
-          { status: "Under Review", label: "Under Review", color: "bg-blue-500", icon: RefreshCw },
-          { status: "Approved", label: "Approved", color: "bg-hy3n-green", icon: CheckCircle },
-          { status: "Rejected", label: "Rejected", color: "bg-hy3n-red", icon: XCircle },
-        ].map(({ status, label, color, icon: Icon }) => (
+          { key: "pending",  label: "Awaiting Review", icon: Clock,       color: "text-hy3n-gold"  },
+          { key: "approved", label: "Approved",        icon: CheckCircle, color: "text-hy3n-green" },
+          { key: "rejected", label: "Rejected",        icon: XCircle,     color: "text-hy3n-red"   },
+        ].map(({ key, label, icon: Icon, color }) => (
           <button
-            key={status}
-            onClick={() => setFilterStatus(filterStatus === status ? "All" : status)}
+            key={key}
+            onClick={() => setFilterStatus(filterStatus === key ? "All" : key)}
             className={`bg-hy3n-surface border rounded-2xl p-4 text-left transition-all hover:scale-[1.02] ${
-              filterStatus === status ? "border-hy3n-gold/50" : "border-hy3n-border"
+              filterStatus === key ? "border-hy3n-gold/50" : "border-hy3n-border"
             }`}
           >
-            <div className={`w-8 h-8 rounded-xl ${color}/15 flex items-center justify-center mb-2`}>
-              <Icon size={16} className={color.replace("bg-", "text-")} />
-            </div>
-            <p className="text-2xl font-bold text-white">{counts[status]}</p>
+            <Icon size={20} className={`${color} mb-2`} />
+            <p className={`text-2xl font-bold ${color}`}>{counts[key]}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
           </button>
         ))}
@@ -105,11 +107,11 @@ export default function DriverApplications() {
           />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {["All", "Pending", "Under Review", "Approved", "Rejected"].map(s => (
+          {["All", "pending", "approved", "rejected"].map(s => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
-              className={`px-3 py-2 rounded-xl text-xs font-medium transition-colors ${
+              className={`px-3 py-2 rounded-xl text-xs font-medium transition-colors capitalize ${
                 filterStatus === s ? "bg-hy3n-gold text-black" : "bg-hy3n-surface border border-hy3n-border text-muted-foreground hover:text-white"
               }`}
             >
@@ -128,9 +130,7 @@ export default function DriverApplications() {
         <div className="bg-hy3n-surface border border-hy3n-border rounded-2xl flex flex-col items-center justify-center py-20 gap-3">
           <ClipboardList size={40} className="text-muted-foreground/40" />
           <p className="text-muted-foreground text-sm">No applications found</p>
-          {filterStatus === "Pending" && (
-            <p className="text-xs text-muted-foreground/60">New applications from the driver portal will appear here</p>
-          )}
+          <p className="text-xs text-muted-foreground/60">Drivers who register via the Driver App will appear here</p>
         </div>
       ) : (
         <div className="bg-hy3n-surface border border-hy3n-border rounded-2xl overflow-hidden">
@@ -138,17 +138,16 @@ export default function DriverApplications() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-muted-foreground text-xs uppercase tracking-wide border-b border-hy3n-border bg-white/2">
-                  <th className="text-left px-5 py-3">Applicant</th>
+                  <th className="text-left px-5 py-3">Driver</th>
                   <th className="text-left px-5 py-3 hidden md:table-cell">Vehicle</th>
-                  <th className="text-left px-5 py-3 hidden lg:table-cell">City</th>
+                  <th className="text-left px-5 py-3 hidden md:table-cell">Categories</th>
                   <th className="text-left px-5 py-3">Status</th>
-                  <th className="text-left px-5 py-3 hidden sm:table-cell">Applied</th>
                   <th className="text-right px-5 py-3">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map(app => {
-                  const StatusIcon = statusIcons[app.status] || Clock;
+                  const StatusIcon = statusIcons[app.approval_status] || Clock;
                   return (
                     <tr key={app.id} className="border-b border-hy3n-border/40 hover:bg-white/3 transition-colors">
                       <td className="px-5 py-3">
@@ -163,18 +162,17 @@ export default function DriverApplications() {
                         </div>
                       </td>
                       <td className="px-5 py-3 hidden md:table-cell">
-                        <p className="text-white text-xs">{app.vehicle_model || app.vehicle_type || "—"}</p>
-                        <p className="text-muted-foreground text-xs">{app.vehicle_plate || ""}</p>
+                        <p className="text-white text-xs">{[app.vehicle_make, app.vehicle_model, app.vehicle_year].filter(Boolean).join(" ") || "—"}</p>
+                        <p className="text-muted-foreground text-xs">{app.license_plate || ""}</p>
                       </td>
-                      <td className="px-5 py-3 hidden lg:table-cell text-muted-foreground text-xs">{app.city || "—"}</td>
+                      <td className="px-5 py-3 hidden md:table-cell">
+                        <p className="text-muted-foreground text-xs capitalize">{(app.ride_categories || ["standard"]).join(", ")}</p>
+                      </td>
                       <td className="px-5 py-3">
-                        <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[app.status]}`}>
+                        <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${statusColors[app.approval_status] || "text-muted-foreground bg-white/5"}`}>
                           <StatusIcon size={11} />
-                          {app.status}
+                          {app.approval_status || "pending"}
                         </span>
-                      </td>
-                      <td className="px-5 py-3 hidden sm:table-cell text-muted-foreground text-xs">
-                        {app.created_date ? new Date(app.created_date).toLocaleDateString() : "—"}
                       </td>
                       <td className="px-5 py-3 text-right">
                         <button
@@ -193,12 +191,81 @@ export default function DriverApplications() {
         </div>
       )}
 
+      {/* Inline approval modal */}
       {selected && (
-        <ApplicationDetailModal
-          application={selected}
-          onClose={() => setSelected(null)}
-          onUpdated={() => { setSelected(null); fetchApplications(); }}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="bg-hy3n-surface border border-hy3n-border rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-hy3n-border sticky top-0 bg-hy3n-surface z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-hy3n-gold/15 border border-hy3n-gold/30 flex items-center justify-center text-hy3n-gold font-bold">
+                  {selected.full_name?.charAt(0) || "?"}
+                </div>
+                <div>
+                  <h2 className="text-white font-bold">{selected.full_name}</h2>
+                  <p className="text-xs text-muted-foreground capitalize">{selected.approval_status || "pending"}</p>
+                </div>
+              </div>
+              <button onClick={() => setSelected(null)} className="text-muted-foreground hover:text-white p-1 text-lg">✕</button>
+            </div>
+
+            <div className="px-6 py-5 space-y-4 text-sm">
+              <div className="grid grid-cols-2 gap-3 bg-white/3 rounded-xl p-4">
+                <div><p className="text-xs text-muted-foreground">Phone</p><p className="text-white">{selected.phone || "—"}</p></div>
+                <div><p className="text-xs text-muted-foreground">Email</p><p className="text-white">{selected.email || "—"}</p></div>
+                <div><p className="text-xs text-muted-foreground">Vehicle</p><p className="text-white">{[selected.vehicle_make, selected.vehicle_model, selected.vehicle_year].filter(Boolean).join(" ") || "—"}</p></div>
+                <div><p className="text-xs text-muted-foreground">Plate</p><p className="text-white">{selected.license_plate || "—"}</p></div>
+                <div><p className="text-xs text-muted-foreground">Color</p><p className="text-white">{selected.vehicle_color || "—"}</p></div>
+                <div><p className="text-xs text-muted-foreground">MoMo</p><p className="text-white">{selected.momo_number || "—"}</p></div>
+                <div className="col-span-2"><p className="text-xs text-muted-foreground">Categories</p><p className="text-white capitalize">{(selected.ride_categories || ["standard"]).join(", ")}</p></div>
+              </div>
+
+              {(selected.ghana_card_url || selected.drivers_license_url || selected.vehicle_registration_url || selected.insurance_url || selected.roadworthy_url) && (
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Documents</p>
+                  {[
+                    { label: "Ghana Card",             url: selected.ghana_card_url },
+                    { label: "Driver's License",       url: selected.drivers_license_url },
+                    { label: "Vehicle Registration",   url: selected.vehicle_registration_url },
+                    { label: "Insurance",              url: selected.insurance_url },
+                    { label: "Roadworthy Certificate", url: selected.roadworthy_url },
+                  ].filter(d => d.url).map(d => (
+                    <a key={d.label} href={d.url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-hy3n-gold text-xs hover:underline">
+                      <Eye size={12} /> {d.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {selected.approval_status !== "approved" ? (
+                <div className="flex gap-3 pt-2 border-t border-hy3n-border">
+                  <button
+                    onClick={() => updateStatus(selected, "approved")}
+                    disabled={!!saving}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-hy3n-green/10 text-hy3n-green border border-hy3n-green/30 hover:bg-hy3n-green/20 transition-colors disabled:opacity-50"
+                  >
+                    <CheckCircle size={15} />
+                    {saving === selected.id + "approved" ? "Approving…" : "Approve Driver"}
+                  </button>
+                  {selected.approval_status !== "rejected" && (
+                    <button
+                      onClick={() => updateStatus(selected, "rejected")}
+                      disabled={!!saving}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-hy3n-red/10 text-hy3n-red border border-hy3n-red/30 hover:bg-hy3n-red/20 transition-colors disabled:opacity-50"
+                    >
+                      <XCircle size={15} />
+                      {saving === selected.id + "rejected" ? "Rejecting…" : "Reject"}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-hy3n-green text-sm font-semibold pt-2 border-t border-hy3n-border">
+                  <CheckCircle size={16} /> This driver is approved and can go online
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
