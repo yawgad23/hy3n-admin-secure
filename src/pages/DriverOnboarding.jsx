@@ -119,7 +119,7 @@ export default function DriverOnboarding() {
   const handleSubmit = async () => {
     setSubmitting(true);
     setError("");
-    await base44.entities.DriverApplication.create({ ...form, status: "Pending" });
+    await base44.entities.DriverProfile.create({ ...form, status: "Pending" });
     setSubmitted(true);
     setSubmitting(false);
   };

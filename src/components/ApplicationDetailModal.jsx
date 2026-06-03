@@ -45,7 +45,7 @@ export default function ApplicationDetailModal({ application, onClose, onUpdated
     const user = await base44.auth.me();
     const updates = { status, reviewed_by: user?.email || "Admin", reviewed_at: now };
     if (status === "Rejected") updates.rejection_reason = rejectionReason;
-    await base44.entities.DriverApplication.update(application.id, updates);
+    await base44.entities.DriverProfile.update(application.id, updates);
 
     if (status === "Approved") {
       await base44.entities.DriverProfile.create({
