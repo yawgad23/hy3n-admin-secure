@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Plus, CheckCircle, Clock, Phone, Copy } from "lucide-react";
 import CommissionForm from "../components/CommissionForm";
 
-const MOMO_NUMBER = "0546728330";
+const MOMO_NUMBER = import.meta.env.VITE_MOMO_NUMBER || "0546728330";
 
 export default function Commissions() {
   const [commissions, setCommissions] = useState([]);

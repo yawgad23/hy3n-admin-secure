@@ -5,15 +5,15 @@ import { Shield, Lock, Eye, EyeOff, AlertTriangle, LogOut } from "lucide-react";
 
 // ============================================================
 // ADMIN SECURITY CONFIGURATION
+// Secrets are loaded from environment variables (VITE_* prefix)
+// Set them in your .env file or Base44 project environment settings
 // ============================================================
-// Master access code - CHANGE THIS to your own secret phrase
-const MASTER_ACCESS_CODE = "HY3N-ADMIN-2024";
+const MASTER_ACCESS_CODE = import.meta.env.VITE_MASTER_ACCESS_CODE || "HY3N-ADMIN-2024";
 
-// Super admin emails - these ALWAYS have access (your personal emails)
-const SUPER_ADMIN_EMAILS = [
-  "yawgad23@gmail.com",
-  // Add more super admin emails here
-];
+const SUPER_ADMIN_EMAILS = (import.meta.env.VITE_SUPER_ADMIN_EMAILS || "yawgad23@gmail.com")
+  .split(",")
+  .map(e => e.trim().toLowerCase())
+  .filter(Boolean);
 // ============================================================
 
 export default function AdminGuard() {

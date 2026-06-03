@@ -41,20 +41,24 @@
   },
   "rls": {
     "create": {
+      "authenticated": true,
       "roles": ["admin"],
-      "filter": "true"
+      "filter": "auth.role === 'admin'"
     },
     "read": {
+      "authenticated": true,
       "roles": ["admin"],
-      "filter": "true"
+      "filter": "auth.role === 'admin'"
     },
     "update": {
+      "authenticated": true,
       "roles": ["admin"],
-      "filter": "true"
+      "filter": "auth.role === 'admin'"
     },
     "delete": {
+      "authenticated": true,
       "roles": ["admin"],
-      "filter": "true"
+      "filter": "auth.role === 'admin'"
     }
   }
 }

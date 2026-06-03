@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Shield, UserPlus, Trash2, CheckCircle, XCircle, Clock, AlertTriangle, Copy, RefreshCw } from "lucide-react";
 
-const SUPER_ADMIN_EMAILS = ["yawgad23@gmail.com"];
+const SUPER_ADMIN_EMAILS = (import.meta.env.VITE_SUPER_ADMIN_EMAILS || "yawgad23@gmail.com")
+  .split(",")
+  .map(e => e.trim().toLowerCase())
+  .filter(Boolean);
 
 export default function Settings() {
   const [admins, setAdmins] = useState([]);
