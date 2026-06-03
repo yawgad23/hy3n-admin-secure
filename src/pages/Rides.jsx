@@ -4,11 +4,11 @@ import { Search, Plus, Car } from "lucide-react";
 import RideForm from "../components/RideForm";
 
 const statusColors = {
-  "Completed": "text-hy3n-green bg-hy3n-green/10",
-  "In Progress": "text-hy3n-gold bg-hy3n-gold/10",
-  "Cancelled": "text-hy3n-red bg-hy3n-red/10",
-  "Requested": "text-blue-400 bg-blue-400/10",
-  "Accepted": "text-purple-400 bg-purple-400/10",
+  "completed": "text-hy3n-green bg-hy3n-green/10",
+  "in_progress": "text-hy3n-gold bg-hy3n-gold/10",
+  "cancelled": "text-hy3n-red bg-hy3n-red/10",
+  "requested": "text-blue-400 bg-blue-400/10",
+  "matched": "text-purple-400 bg-purple-400/10",
 };
 
 export default function Rides() {
@@ -33,7 +33,7 @@ export default function Rides() {
     const matchSearch = !search || 
       r.rider_name?.toLowerCase().includes(search.toLowerCase()) ||
       r.driver_name?.toLowerCase().includes(search.toLowerCase()) ||
-      r.pickup_location?.toLowerCase().includes(search.toLowerCase());
+      (r.pickup_address || r.pickup_location || "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === "All" || r.status === filterStatus;
     return matchSearch && matchStatus;
   });
@@ -72,7 +72,7 @@ export default function Rides() {
           />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {["All", "Requested", "Accepted", "In Progress", "Completed", "Cancelled"].map(s => (
+          {["All", "requested", "matched", "in_progress", "completed", "cancelled"].map(s => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
@@ -113,10 +113,10 @@ export default function Rides() {
                     <td className="px-5 py-3 text-white font-medium">{ride.rider_name}</td>
                     <td className="px-5 py-3 text-muted-foreground hidden md:table-cell">{ride.driver_name || "—"}</td>
                     <td className="px-5 py-3 text-muted-foreground text-xs hidden lg:table-cell">
-                      <span className="block truncate max-w-[140px]">{ride.pickup_location || "—"}</span>
+                      <span className="block truncate max-w-[140px]">{ride.pickup_address || ride.pickup_location || "—"}</span>
                     </td>
                     <td className="px-5 py-3 text-muted-foreground text-xs hidden lg:table-cell">
-                      <span className="block truncate max-w-[140px]">{ride.dropoff_location || "—"}</span>
+                      <span className="block truncate max-w-[140px]">{ride.destination_address || ride.dropoff_location || "—"}</span>
                     </td>
                     <td className="px-5 py-3">
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusColors[ride.status] || "text-white bg-white/10"}`}>
@@ -124,7 +124,7 @@ export default function Rides() {
                       </span>
                     </td>
                     <td className="px-5 py-3 text-muted-foreground text-xs hidden sm:table-cell">{ride.payment_method || "—"}</td>
-                    <td className="px-5 py-3 text-right text-white font-semibold">{ride.fare ? `GHS ${ride.fare}` : "—"}</td>
+                    <td className="px-5 py-3 text-right text-white font-semibold">{(ride.fare_estimate || ride.fare) ? `GHS ${ride.fare_estimate || ride.fare}` : "—"}</td>
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => { setEditRide(ride); setShowForm(true); }} className="text-xs text-hy3n-gold hover:underline">Edit</button>

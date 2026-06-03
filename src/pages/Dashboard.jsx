@@ -16,11 +16,11 @@ const StatCard = ({ label, value, icon: Icon, color, sub }) => (
 );
 
 const statusColors = {
-  "Completed": "text-hy3n-green bg-hy3n-green/10",
-  "In Progress": "text-hy3n-gold bg-hy3n-gold/10",
-  "Cancelled": "text-hy3n-red bg-hy3n-red/10",
-  "Requested": "text-blue-400 bg-blue-400/10",
-  "Accepted": "text-purple-400 bg-purple-400/10",
+  "completed": "text-hy3n-green bg-hy3n-green/10",
+  "in_progress": "text-hy3n-gold bg-hy3n-gold/10",
+  "cancelled": "text-hy3n-red bg-hy3n-red/10",
+  "requested": "text-blue-400 bg-blue-400/10",
+  "matched": "text-purple-400 bg-purple-400/10",
 };
 
 export default function Dashboard() {
@@ -42,9 +42,9 @@ export default function Dashboard() {
     });
   }, []);
 
-  const totalRevenue = rides.filter(r => r.status === "Completed").reduce((s, r) => s + (r.fare || 0), 0);
+  const totalRevenue = rides.filter(r => r.status === "completed").reduce((s, r) => s + (r.fare_estimate || r.fare || 0), 0);
   const activeDrivers = drivers.filter(d => d.is_online).length;
-  const completedToday = rides.filter(r => r.status === "Completed").length;
+  const completedToday = rides.filter(r => r.status === "completed").length;
   const recentRides = rides.slice(0, 8);
 
   if (loading) return (
@@ -70,7 +70,7 @@ export default function Dashboard() {
 
       {/* Ride status breakdown */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {["Requested","Accepted","In Progress","Completed","Cancelled"].map(status => {
+        {["requested","matched","in_progress","completed","cancelled"].map(status => {
           const count = rides.filter(r => r.status === status).length;
           return (
             <div key={status} className="bg-hy3n-surface border border-hy3n-border rounded-xl px-4 py-3 flex items-center gap-3">
@@ -112,7 +112,7 @@ export default function Dashboard() {
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right text-white font-medium">
-                    {ride.fare ? `GHS ${ride.fare}` : "—"}
+                    {(ride.fare_estimate || ride.fare) ? `GHS ${ride.fare_estimate || ride.fare}` : "—"}
                   </td>
                 </tr>
               ))}

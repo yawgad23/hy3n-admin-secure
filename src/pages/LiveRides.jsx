@@ -5,11 +5,11 @@ import DispatchEngine from "../components/DispatchEngine";
 import LiveMap from "../components/LiveMap";
 
 const tripStatusConfig = {
-  "Requested":   { label: "Waiting for Driver", color: "text-blue-400 bg-blue-400/10", dot: "bg-blue-400", pulse: false },
-  "Accepted":    { label: "Driver Assigned", color: "text-purple-400 bg-purple-400/10", dot: "bg-purple-400", pulse: true },
-  "In Progress": { label: "Trip Started ✓", color: "text-hy3n-green bg-hy3n-green/10", dot: "bg-hy3n-green", pulse: true },
-  "Completed":   { label: "Completed", color: "text-muted-foreground bg-white/5", dot: "bg-muted-foreground", pulse: false },
-  "Cancelled":   { label: "Cancelled", color: "text-hy3n-red bg-hy3n-red/10", dot: "bg-hy3n-red", pulse: false },
+  "requested":   { label: "Waiting for Driver", color: "text-blue-400 bg-blue-400/10", dot: "bg-blue-400", pulse: false },
+  "matched":    { label: "Driver Assigned", color: "text-purple-400 bg-purple-400/10", dot: "bg-purple-400", pulse: true },
+  "in_progress": { label: "Trip Started ✓", color: "text-hy3n-green bg-hy3n-green/10", dot: "bg-hy3n-green", pulse: true },
+  "completed":   { label: "Completed", color: "text-muted-foreground bg-white/5", dot: "bg-muted-foreground", pulse: false },
+  "cancelled":   { label: "Cancelled", color: "text-hy3n-red bg-hy3n-red/10", dot: "bg-hy3n-red", pulse: false },
 };
 
 export default function LiveRides() {
@@ -33,10 +33,10 @@ export default function LiveRides() {
     return () => clearInterval(interval);
   }, []);
 
-  const active = rides.filter(r => ["Requested","Accepted","In Progress"].includes(r.status));
-  const tripStarted = active.filter(r => r.status === "In Progress");
-  const waiting = active.filter(r => r.status === "Requested");
-  const accepted = active.filter(r => r.status === "Accepted");
+  const active = rides.filter(r => ["requested","matched","in_progress"].includes(r.status));
+  const tripStarted = active.filter(r => r.status === "in_progress");
+  const waiting = active.filter(r => r.status === "requested");
+  const accepted = active.filter(r => r.status === "matched");
 
   const updateRideStatus = async (ride, status) => {
     await base44.entities.Ride.update(ride.id, { status });
@@ -111,25 +111,25 @@ export default function LiveRides() {
               const cfg = tripStatusConfig[ride.status];
               return (
                 <div key={ride.id} className={`bg-hy3n-surface rounded-2xl p-5 border transition-colors ${
-                  ride.status === "In Progress" ? "border-hy3n-green/40" :
-                  ride.status === "Accepted" ? "border-purple-400/30" : "border-hy3n-border"
+                  ride.status === "in_progress" ? "border-hy3n-green/40" :
+                  ride.status === "matched" ? "border-purple-400/30" : "border-hy3n-border"
                 }`}>
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${cfg.dot} ${cfg.pulse ? "animate-pulse" : ""}`} />
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cfg.color}`}>{cfg.label}</span>
                     </div>
-                    {ride.fare && <span className="text-white font-bold text-sm">GHS {ride.fare}</span>}
+                    {(ride.fare_estimate || ride.fare) && <span className="text-white font-bold text-sm">GHS {ride.fare_estimate || ride.fare}</span>}
                   </div>
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-start gap-2 text-xs">
                       <MapPin size={12} className="text-hy3n-green mt-0.5 flex-shrink-0" />
-                      <span className="text-white truncate">{ride.pickup_location || "—"}</span>
+                      <span className="text-white truncate">{ride.pickup_address || ride.pickup_location || "—"}</span>
                     </div>
                     <div className="flex items-start gap-2 text-xs">
                       <Navigation size={12} className="text-hy3n-red mt-0.5 flex-shrink-0" />
-                      <span className="text-muted-foreground truncate">{ride.dropoff_location || "—"}</span>
+                      <span className="text-muted-foreground truncate">{ride.destination_address || ride.dropoff_location || "—"}</span>
                     </div>
                   </div>
 
@@ -158,19 +158,19 @@ export default function LiveRides() {
 
                   {/* Admin actions */}
                   <div className="flex gap-2 flex-wrap">
-                    {ride.status === "Requested" && (
+                    {ride.status === "requested" && (
                       <button onClick={() => setDispatchRide(ride)}
                         className="text-xs text-hy3n-gold border border-hy3n-gold/30 hover:bg-hy3n-gold/10 px-2 py-1 rounded-lg transition-colors flex items-center gap-1">
                         ⚡ Dispatch
                       </button>
                     )}
-                    {ride.status !== "Completed" && (
-                      <button onClick={() => updateRideStatus(ride, "Completed")}
+                    {ride.status !== "completed" && (
+                      <button onClick={() => updateRideStatus(ride, "completed")}
                         className="text-xs text-blue-400 border border-blue-400/30 hover:bg-blue-400/10 px-2 py-1 rounded-lg transition-colors">
                         Complete
                       </button>
                     )}
-                    <button onClick={() => updateRideStatus(ride, "Cancelled")}
+                    <button onClick={() => updateRideStatus(ride, "cancelled")}
                       className="text-xs text-hy3n-red border border-hy3n-red/30 hover:bg-hy3n-red/10 px-2 py-1 rounded-lg transition-colors ml-auto">
                       Cancel
                     </button>
@@ -197,7 +197,7 @@ export default function LiveRides() {
                 </tr>
               </thead>
               <tbody>
-                {rides.filter(r => ["Completed","Cancelled"].includes(r.status)).slice(0,10).map(ride => {
+                {rides.filter(r => ["completed","cancelled"].includes(r.status)).slice(0,10).map(ride => {
                   const cfg = tripStatusConfig[ride.status];
                   return (
                     <tr key={ride.id} className="border-b border-hy3n-border/40 hover:bg-white/3 transition-colors">
@@ -206,11 +206,11 @@ export default function LiveRides() {
                       <td className="px-5 py-3">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cfg.color}`}>{ride.status}</span>
                       </td>
-                      <td className="px-5 py-3 text-right text-white font-semibold">{ride.fare ? `GHS ${ride.fare}` : "—"}</td>
+                      <td className="px-5 py-3 text-right text-white font-semibold">{(ride.fare_estimate || ride.fare) ? `GHS ${ride.fare_estimate || ride.fare}` : "—"}</td>
                     </tr>
                   );
                 })}
-                {rides.filter(r => ["Completed","Cancelled"].includes(r.status)).length === 0 && (
+                {rides.filter(r => ["completed","cancelled"].includes(r.status)).length === 0 && (
                   <tr><td colSpan={4} className="text-center py-8 text-muted-foreground">No completed rides yet</td></tr>
                 )}
               </tbody>

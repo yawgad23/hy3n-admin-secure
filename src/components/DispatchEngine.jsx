@@ -109,7 +109,10 @@ export default function DispatchEngine({ ride, onClose, onDispatched }) {
     await base44.entities.Ride.update(ride.id, {
       driver_id: entry.driver.id,
       driver_name: entry.driver.full_name,
-      status: "Accepted",
+      driver_phone: entry.driver.phone || "",
+      driver_vehicle: entry.driver.vehicle_model || entry.driver.vehicle_type || "",
+      driver_plate: entry.driver.vehicle_plate || "",
+      status: "matched",
       vehicle_type: entry.driver.vehicle_type,
     });
     setDispatched(true);
