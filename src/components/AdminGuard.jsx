@@ -8,7 +8,7 @@ import { Shield, Lock, Eye, EyeOff, AlertTriangle, LogOut } from "lucide-react";
 // Secrets are loaded from environment variables (VITE_* prefix)
 // Set them in your .env file or Base44 project environment settings
 // ============================================================
-const MASTER_ACCESS_CODE = import.meta.env.VITE_MASTER_ACCESS_CODE || "HY3N-ADMIN-2024";
+const MASTER_ACCESS_CODE = import.meta.env.VITE_MASTER_ACCESS_CODE || "kosa1912";
 
 const SUPER_ADMIN_EMAILS = (import.meta.env.VITE_SUPER_ADMIN_EMAILS || "yawgad23@gmail.com")
   .split(",")
