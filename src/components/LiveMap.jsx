@@ -78,7 +78,7 @@ export default function LiveMap({ rides }) {
   const allPoints = rideCoords.flatMap(r => [r.pickup, r.dropoff].filter(Boolean));
   const centerGhana = [7.9465, -1.0232];
 
-  const statusColor = { "Requested": "#3B82F6", "Accepted": "#8B5CF6", "In Progress": "#22C55E" };
+  const statusColor = { "requested": "#3B82F6", "accepted": "#8B5CF6", "in_progress": "#22C55E" };
 
   return (
     <div className="relative w-full h-full rounded-2xl overflow-hidden">
@@ -107,7 +107,7 @@ export default function LiveMap({ rides }) {
         {rideCoords.map(({ ride, pickup, dropoff }) => (
           <div key={ride.id}>
             {pickup && (
-              <Marker position={pickup} icon={ride.status === "In Progress" ? activeIcon : pickupIcon}>
+              <Marker position={pickup} icon={ride.status === "in_progress" ? activeIcon : pickupIcon}>
                 <Popup>
                   <div style={{ minWidth: 160 }}>
                     <div style={{ fontWeight: 700, marginBottom: 4 }}>{ride.rider_name}</div>
@@ -139,7 +139,7 @@ export default function LiveMap({ rides }) {
                 color={statusColor[ride.status] || "#F5A623"}
                 weight={2.5}
                 opacity={0.7}
-                dashArray={ride.status === "In Progress" ? undefined : "6 6"}
+                dashArray={ride.status === "in_progress" ? undefined : "6 6"}
               />
             )}
           </div>

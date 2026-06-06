@@ -22,7 +22,7 @@ export default function DriverPayoutDetail({ driver, onClose, onUpdated }) {
       base44.entities.Ride.filter({ driver_id: driver.id }, "-created_date", 200),
     ]).then(([p, r]) => {
       setPayouts(p);
-      setRides(r.filter(r => r.status === "Completed"));
+      setRides(r.filter(r => r.status === "completed"));
       setLoading(false);
     });
   }, [driver.id]);

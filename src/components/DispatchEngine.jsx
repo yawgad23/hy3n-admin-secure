@@ -80,7 +80,7 @@ export default function DispatchEngine({ ride, onClose, onDispatched }) {
   useEffect(() => {
     Promise.all([
       base44.entities.DriverProfile.filter({ status: "Active" }, "-rating", 200),
-      base44.entities.Ride.filter({ status: "Accepted" }, "-created_date", 100),
+      base44.entities.Ride.filter({ status: "accepted" }, "-created_date", 100),
     ]).then(([d, r]) => {
       setDrivers(d);
       setActiveRides(r);
