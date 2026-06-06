@@ -219,15 +219,17 @@ export default function DriverApplications() {
                 <div className="col-span-2"><p className="text-xs text-muted-foreground">Categories</p><p className="text-white capitalize">{(selected.ride_categories || ["standard"]).join(", ")}</p></div>
               </div>
 
-              {(selected.ghana_card_url || selected.drivers_license_url || selected.vehicle_registration_url || selected.insurance_url || selected.roadworthy_url) && (
+              {(selected.ghana_card_front_url || selected.ghana_card_url || selected.drivers_license_front_url || selected.drivers_license_url || selected.vehicle_registration_url || selected.insurance_url || selected.roadworthy_url) && (
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Documents</p>
                   {[
-                    { label: "Ghana Card",             url: selected.ghana_card_url },
-                    { label: "Driver's License",       url: selected.drivers_license_url },
-                    { label: "Vehicle Registration",   url: selected.vehicle_registration_url },
-                    { label: "Insurance",              url: selected.insurance_url },
-                    { label: "Roadworthy Certificate", url: selected.roadworthy_url },
+                    { label: "Ghana Card — Front",       url: selected.ghana_card_front_url || selected.ghana_card_url },
+                    { label: "Ghana Card — Back",        url: selected.ghana_card_back_url },
+                    { label: "Driver's License — Front", url: selected.drivers_license_front_url || selected.drivers_license_url },
+                    { label: "Driver's License — Back",  url: selected.drivers_license_back_url },
+                    { label: "Vehicle Registration",     url: selected.vehicle_registration_url },
+                    { label: "Insurance",                url: selected.insurance_url },
+                    { label: "Roadworthy Certificate",   url: selected.roadworthy_url },
                   ].filter(d => d.url).map(d => (
                     <a key={d.label} href={d.url} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-2 text-hy3n-gold text-xs hover:underline">
